@@ -2,10 +2,8 @@ import deflicker
 import video_stabilization
 import resize_images
 import inference_video
-import argparse
 import errno
 import os
-import glob
 import cv2
 import shutil
 from gooey import Gooey, GooeyParser
@@ -52,24 +50,6 @@ def saveFramesAsVideo(frames_folder, output):
         out.write(frame)
     cap.release()
     out.release()
-
-
-# def saveFramesAsVideo(frames_folder, output):
-#     print("Saving video from ", frames_folder, " to ", output)
-#     img_array = []
-#     for filename in glob.glob(frames_folder + '/*.png'):
-#         print("Reading: ", filename)
-
-#         img = cv2.imread(filename)
-#         height, width, layers = img.shape
-#         size = (width, height)
-#         img_array.append(img)
-#         fourcc = cv2.VideoWriter_fourcc('m', 'p', '4', 'v')
-#         out = cv2.VideoWriter(output, fourcc, 5, size)
-#         for i in range(len(img_array)):
-#             print("Writing..")
-#             out.write(img_array[i])
-#         out.release()
 
 
 if __name__ == "__main__":
