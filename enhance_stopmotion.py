@@ -1,10 +1,11 @@
 import deflicker
 import video_stabilization
 import resize_images
-import subprocess
+import inference_video
 import argparse
 import errno
 import os
+import shutil
 from gooey import Gooey, GooeyParser
 
 @Gooey(program_name="Enhance Stop Motion",
@@ -26,35 +27,57 @@ if __name__ == "__main__":
     input_dir = args.Input
     output_dir = args.Output
 
+    #Make temp folder for images
+    temp_f = output_dir+"/temp"
+    try:
+        os.mkdir(temp_f)
+    except OSError as e:
+        if e.errno != errno.EEXIST:
+            raise   
+        pass
+
     # Resize images
     print("Resizing images")
     try:
-        os.mkdir(output_dir+"/output-resize")
-        resize_images.resize_aspect_fit(input_dir, output_dir+"/output-resize")
+        resize_output = temp_f+"/output-resize"
+        os.mkdir(resize_output)
         # os.makedirs("output-resize")
         # resize_images.resize_aspect_fit(input_dir, "output-resize")
     except OSError as e:
         if e.errno != errno.EEXIST:
             raise   
         pass
+    resize_images.resize_aspect_fit(input_dir, resize_output)
+    input_dir = resize_output
 
     # Call deflicker function
     print("Deflickering")
     try:
-        os.mkdir(output_dir+"/output-deflicker")
-        deflicker.deflicker_with_files(output_dir+"/output-resize", output_dir+"/output-deflicker")
-        # deflicker.deflicker_with_files(input_dir, output_dir+"/output-deflicker")
+        deflicker_output = temp_f+"/output-deflicker"
+        os.mkdir(deflicker_output)
     except OSError as e:
         if e.errno != errno.EEXIST:
             raise   
         pass
+    deflicker.deflicker_with_files(input_dir, deflicker_output)
+    input_dir = deflicker_output
+
 
     # Stabilize
     print("Stabilizing")
-    video_stabilization.stabilize(output_dir+"/output-deflicker", output_dir+"/output-stabilizer.mp4")
-    # video_stabilization.stabilize("output-deflicker", output_dir+"/output-stabilizer.mp4")
+    stabilize_output = temp_f+"/output-stabilizer.mp4"
+    video_stabilization.stabilize(input_dir, stabilize_output)
+    input_dir = stabilize_output
 
+    #TODO: add a converter to mp4 if user doesn't want stabilization
+    
     # Double framerate
     print("Doubling framerate")
-    infere = subprocess.run(["python3", "inference_video.py", "--exp=1", "--video="+output_dir+"/output-stabilizer.mp4", "--scale=0.5"])
-    print("The exit code was: %d" % infere.returncode)
+    inference_video.double_frames(input_dir, output_dir+"/output.mp4")
+    #Delete temp folder
+    try:
+        shutil.rmtree(temp_f)
+    except OSError as e:
+        if e.errno != errno.EEXIST:
+            raise   
+        pass

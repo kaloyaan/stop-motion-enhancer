@@ -1,8 +1,3 @@
-#!/usr/bin/env python2
-
-# Futures
-from __future__ import print_function, division
-
 # Standard
 import os
 import multiprocessing
@@ -258,12 +253,6 @@ def deflicker_with_files(input_dir, output_dir):
 	print("Plotting curves")
 	plot_luminance_curves([luminances, fitted_curve, new_luminances], "curves.pdf", ["original", "fitted", "result"])
 
-
 if __name__ == "__main__":
-	# Define the input and output directories
-	# input_dir = "output-resize"
-	# output_dir = "output-deflicker"
-
-	# And call the main function
 	deflicker_with_files(input_dir, output_dir)	
 
