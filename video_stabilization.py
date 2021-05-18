@@ -37,7 +37,6 @@ def fixBorder(frame):
 
 def stabilize(input, output, smoothing_radius=5):
     # The larger the more stable the video, but less reactive to sudden panning
-    # SMOOTHING_RADIUS=10
 
     # Read input video
     cap = cv2.VideoCapture(input+'/%03d.JPG', cv2.CAP_IMAGES)
@@ -50,7 +49,6 @@ def stabilize(input, output, smoothing_radius=5):
     h = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
 
     # Get frames per second (fps)
-    # fps = cap.get(cv2.CAP_PROP_FPS)
     fps = 5  # Manually define fps since it's an image seq
 
     # Define the codec for output video
@@ -158,16 +156,6 @@ def stabilize(input, output, smoothing_radius=5):
         # Fix border artifacts
         frame_stabilized = fixBorder(frame_stabilized)
 
-        # Write the frame to the file
-    #   frame_out = cv2.hconcat([frame, frame_stabilized])
-
-        # If the image is too big, resize it.
-    #   if(frame_out.shape[1] > 1920):
-    #     frame_out = cv2.resize(frame_out, (frame_out.shape[1]/2, frame_out.shape[0]/2))
-
-    #   cv2.imshow("Before and After", frame_out)
-
-        # cv2.imwrite(output+'/%03d.png' % i, frame_stabilized, [int(cv2.IMWRITE_PNG_COMPRESSION), 9])
         cv2.waitKey(10)
         out.write(frame_stabilized)
 

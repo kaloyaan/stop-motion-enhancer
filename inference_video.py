@@ -3,7 +3,6 @@ import cv2
 import torch
 import argparse
 import numpy as np
-from tqdm import tqdm
 from torch.nn import functional as F
 import warnings
 import _thread
@@ -48,19 +47,22 @@ def pad_image(img, padding):
     return F.pad(img, padding)
 
 
-modelDir = 'train_log'
-try:
-    from model.RIFE_HDv2 import Model
-    model = Model()
-    model.load_model(modelDir, -1)
-    print("Loaded v2.x HD model.")
-except:
-    from model.RIFE_HD import Model
-    model = Model()
-    model.load_model(modelDir, -1)
-    print("Loaded v1.x HD model")
-model.eval()
-model.device()
+def loadModel():
+    modelDir = 'train_log'
+    global model
+
+    try:
+        from model.RIFE_HDv2 import Model
+        model = Model()
+        model.load_model(modelDir, -1)
+        print("Loaded v2.x HD model.")
+    except:
+        from model.RIFE_HD import Model
+        model = Model()
+        model.load_model(modelDir, -1)
+        print("Loaded v1.x HD model")
+    model.eval()
+    model.device()
 
 
 def double_frames(video, output, fps=5, scale=0.5):
@@ -96,11 +98,14 @@ def double_frames(video, output, fps=5, scale=0.5):
     # vid_out_name = '{}_{}X_{}fps.{}'.format(video_path_wo_ext, (2 ** exp), int(np.round(fps)), ext)
     vid_out = cv2.VideoWriter(vid_out_name, fourcc, fps, (w, h))
 
+    loadModel()
+
     tmp = max(32, int(32 / scale))
     ph = ((h - 1) // tmp + 1) * tmp
     pw = ((w - 1) // tmp + 1) * tmp
     padding = (0, pw - w, 0, ph - h)
-    pbar = tqdm(total=tot_frame)
+    # pbar = tqdm(total=tot_frame)
+    progress = 0
     skip_frame = 1
     write_buffer = Queue(maxsize=500)
     read_buffer = Queue(maxsize=500)
@@ -112,6 +117,7 @@ def double_frames(video, output, fps=5, scale=0.5):
     I1 = pad_image(I1, padding)
 
     while True:
+        print("progress: {}/{}".format(progress, int(tot_frame)))
         frame = read_buffer.get()
         if frame is None:
             break
@@ -131,7 +137,7 @@ def double_frames(video, output, fps=5, scale=0.5):
                     skip_frame))
             skip_frame += 1
             if skip:
-                pbar.update(1)
+                progress += 1
                 continue
 
         if ssim < 0.5:
@@ -150,13 +156,9 @@ def double_frames(video, output, fps=5, scale=0.5):
         for mid in output:
             mid = (((mid[0] * 255.).byte().cpu().numpy().transpose(1, 2, 0)))
             write_buffer.put(mid[:h, :w])
-        pbar.update(1)
+        progress += 1
         lastframe = frame
 
     write_buffer.put(lastframe)
-    import time
-    while(not write_buffer.empty()):
-        time.sleep(0.1)
-    pbar.close()
     if not vid_out is None:
         vid_out.release()

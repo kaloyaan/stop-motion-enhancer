@@ -14,13 +14,22 @@ from gooey import Gooey, GooeyParser
        default_size=(700, 600),
        header_bg_color='#2A86BF',
        body_bg_color='#EDE1D1',
-       optional_cols=1)
+       optional_cols=1,
+       progress_regex=r"^progress: (?P<current>\d+)/(?P<total>\d+)$",
+       progress_expr="current / total * 100",
+       )
 def parseargs():
     parser = GooeyParser()
     parser.add_argument('input', metavar="Input directory",
                         widget="DirChooser", help='Select the folder with your images.')
-    parser.add_argument('output', metavar="Output directory", widget="DirChooser",
-                        help='Select the folder where your output should be storted.')
+    parser.add_argument('output', metavar="Output directory", widget="FileSaver", gooey_options={
+        'wildcard':
+            "mp4 (*.mp4)|*.mp4|",
+        'message': "Save location",
+        'default_file': "output.mp4",
+        'default_dir': "output"},
+        help='Select the folder where your output should be storted.',
+    )
     parser.add_argument('-resize', metavar="Resize images", action='store_true',
                         help='Makes images twice as small for quicker execution.')
     parser.add_argument('-skipstabilize', metavar="Skip stabilization", action='store_true',
@@ -56,10 +65,19 @@ if __name__ == "__main__":
     args = parseargs()
     # Define the input and output directories
     input_dir = args.input
-    output_dir = args.output
+    output_file = args.output
 
     # Make temp folder for images
-    temp_f = output_dir+"/temp"
+    temp_f = "temp"
+
+    if os.path.isdir(temp_f):
+        print("Found leftover temp folder. Removing.")
+        try:
+            shutil.rmtree(temp_f)
+        except OSError as e:
+            if e.errno != errno.EEXIST:
+                raise
+            pass
     try:
         os.mkdir(temp_f)
     except OSError as e:
@@ -73,8 +91,6 @@ if __name__ == "__main__":
         try:
             resize_output = temp_f+"/output-resize"
             os.mkdir(resize_output)
-            # os.makedirs("output-resize")
-            # resize_images.resize_aspect_fit(input_dir, "output-resize")
         except OSError as e:
             if e.errno != errno.EEXIST:
                 raise
@@ -100,14 +116,14 @@ if __name__ == "__main__":
         if not args.skipinterpolate:
             stabilize_output = temp_f+"/output-stabilizer.mp4"
         else:
-            stabilize_output = output_dir+"/output.mp4"  # This will be the final output
+            stabilize_output = output_file  # This will be the final output
         video_stabilization.stabilize(input_dir, stabilize_output)
         input_dir = stabilize_output
     else:
         print("Skipping stabilization")
         if args.skipinterpolate:
             saveFramesAsVideo(
-                "/Users/kaloyan/Desktop/CPSC678/stop motion project/stop-motion-enhancer/output/temp/output-deflicker", output_dir+"/output.mp4")
+                "/Users/kaloyan/Desktop/CPSC678/stop motion project/stop-motion-enhancer/output/temp/output-deflicker", output_file)
         else:
             saveFramesAsVideo(input_dir, temp_f+"/output-deflicker.mp4")
             input_dir = temp_f+"/output-deflicker.mp4"
@@ -115,7 +131,7 @@ if __name__ == "__main__":
     # Double framerate
     if not args.skipinterpolate:
         print("Doubling framerate")
-        inference_video.double_frames(input_dir, output_dir+"/output.mp4")
+        inference_video.double_frames(input_dir, output_file)
 
     print("Deleting temporary folder")
     try:
@@ -126,4 +142,4 @@ if __name__ == "__main__":
         pass
 
     print("Done!")
-    print("Your output is located in: ", output_dir)
+    print("Your output is located in: ", output_file)
