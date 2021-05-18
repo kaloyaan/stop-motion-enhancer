@@ -124,3 +124,6 @@ if __name__ == "__main__":
         if e.errno != errno.EEXIST:
             raise
         pass
+
+    print("Done!")
+    print("Your output is located in: ", output_dir)
