@@ -22,13 +22,13 @@ def parseargs():
     parser = GooeyParser()
     parser.add_argument('input', metavar="Input directory",
                         widget="DirChooser", help='Select the folder with your images.')
-    parser.add_argument('output', metavar="Output directory", widget="FileSaver", gooey_options={
+    parser.add_argument('output', metavar="Output file", widget="FileSaver", gooey_options={
         'wildcard':
             "mp4 (*.mp4)|*.mp4|",
         'message': "Save location",
         'default_file': "output.mp4",
         'default_dir': "output"},
-        help='Select the folder where your output should be storted.',
+        help='Select the file where your output should be storted.',
     )
     parser.add_argument('-resize', metavar="Resize images", action='store_true',
                         help='Makes images twice as small for quicker execution.')
