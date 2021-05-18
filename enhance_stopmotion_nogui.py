@@ -6,35 +6,23 @@ import errno
 import os
 import cv2
 import shutil
-from gooey import Gooey, GooeyParser
+import argparse
 
 
-@Gooey(program_name="Stop Motion Enhancer",
-       program_description="Enhance stop motion animation with a single click.",
-       default_size=(700, 600),
-       header_bg_color='#2A86BF',
-       body_bg_color='#EDE1D1',
-       optional_cols=1,
-       progress_regex=r"^progress: (?P<current>\d+)/(?P<total>\d+)$",
-       progress_expr="current / total * 100",
-       )
 def parseargs():
-    parser = GooeyParser()
-    parser.add_argument('input', metavar="Input directory",
-                        widget="DirChooser", help='Select the folder with your images.')
-    parser.add_argument('output', metavar="Output file", widget="FileSaver", gooey_options={
-        'wildcard':
-            "mp4 (*.mp4)|*.mp4|",
-        'message': "Save location",
-        'default_file': "output.mp4",
-        'default_dir': "output"},
-        help='Select the file where your output should be storted.',
-    )
-    parser.add_argument('-resize', metavar="Resize images", action='store_true',
+    parser = argparse.ArgumentParser(
+        description='Enhance stop motion animation with a single click.')
+
+    parser.add_argument('input',
+                        help='Select the folder with your images.')
+    parser.add_argument('output',
+                        help='Select the file where your output should be storted.',
+                        )
+    parser.add_argument('-resize', action='store_true',
                         help='Makes images twice as small for quicker execution.')
-    parser.add_argument('-skipstabilize', metavar="Skip stabilization", action='store_true',
+    parser.add_argument('-skipstabilize', action='store_true',
                         help='Do not stabilize the video. Helps when stabilization is buggy.')
-    parser.add_argument('-skipinterpolate', metavar="Skip frame doubling", action='store_true',
+    parser.add_argument('-skipinterpolate', action='store_true',
                         help='Do not double the framerate. Makes program run a lot quicker.')
 
     args = parser.parse_args()

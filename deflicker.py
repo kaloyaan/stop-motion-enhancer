@@ -1,8 +1,3 @@
-#!/usr/bin/env python2
-
-# Futures
-from __future__ import print_function, division
-
 # Standard
 import os
 import multiprocessing
@@ -10,8 +5,6 @@ import multiprocessing
 # Non-standard
 import cv2
 import numpy as np
-import matplotlib.pyplot as plt
-
 
 def list_images(input_dir):
 	""" Produces a list of all the filenames in the input directory. """
@@ -255,15 +248,6 @@ def deflicker_with_files(input_dir, output_dir):
 	err_sum, err_mean, err_std = calculate_error(new_luminances, fitted_curve)
 	print("Total error:", err_sum, "avg", err_mean, "std", err_std)
 	
-	print("Plotting curves")
-	plot_luminance_curves([luminances, fitted_curve, new_luminances], "curves.pdf", ["original", "fitted", "result"])
-
-
 if __name__ == "__main__":
-	# Define the input and output directories
-	# input_dir = "output-resize"
-	# output_dir = "output-deflicker"
-
-	# And call the main function
 	deflicker_with_files(input_dir, output_dir)	
 
