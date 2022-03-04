@@ -1,5 +1,20 @@
 # Stop Motion Enhancer
- Input a stop motion sequence and get a video that's deflickered, stabilized, and doubled in frames. Project for CPSC678, Spring 2021 at Yale.
+
+Stop Motion Enhancer is a tool for improving amateur stop motion animation through deflickering, stabilization and frame interpolation.
+
+Its simple graphical user interface makes it particularly suitable for beginner filmmakers that are experimenting with stop motion and want better visual results. The results are noticeably smoother and have greater temporal coherency due to the adjusted colors, minimized camera shakes and doubling of framerate.
+
+Project for CPSC678, Spring 2021 at Yale.
+ 
+# [Paper](https://drive.google.com/file/d/1j5p9KDSPUUO5oPPTm8ZWSkbNLIJMqAnH/view?usp=sharing)
+
+# Thanks
+
+This code is primarily a proof of concept for the novel pipeline and the one-click GUI which makes these algorithms easy to use for general users. The stop motion enhancement here is made possible by adapting the following existing code. Thank you to the authors:
+
+ - Deflickering - by [Gonçalo Martins](https://github.com/gondsm/timelapse_deflickerer)
+ - Stabilization - by [Abhishek Singh Thakur](https://learnopencv.com/video-stabilization-using-point-feature-matching-in-opencv/)
+ - Frame interpolation - using [RIFE-HDv2 by Huang et al.](https://arxiv.org/abs/2011.06294)
 
 # How to run
 
