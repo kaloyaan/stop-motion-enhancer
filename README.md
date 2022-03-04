@@ -6,7 +6,9 @@ Its simple graphical user interface makes it particularly suitable for beginner 
 
 Project for CPSC678, Spring 2021 at Yale.
  
-# [Paper](https://drive.google.com/file/d/1j5p9KDSPUUO5oPPTm8ZWSkbNLIJMqAnH/view?usp=sharing)
+# Paper
+
+Full implementation, challenges & future work are described in [the paper for the project](https://drive.google.com/file/d/1j5p9KDSPUUO5oPPTm8ZWSkbNLIJMqAnH/view?usp=sharing).
 
 # Thanks
 
